@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang Tỏ Tình</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+      background-color: #ffe6f2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+
+    #content {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      opacity: 0;
+      transition: opacity 2s ease-in;
+    }
+
+    .photo {
+      width: 300px;
+      height: 300px;
+      border-radius: 20px;
+      background-size: cover;
+      background-position: center;
+      margin-bottom: 20px;
+      box-shadow: 0 0 20px rgba(255, 105, 180, 0.5);
+      opacity: 0;
+      transition: opacity 2s ease-in;
+    }
+
+    .message {
+      text-align: center;
+      font-size: 1.2em;
+      color: #ff3399;
+      margin-bottom: 20px;
+      min-height: 60px;
+      opacity: 0;
+      transition: opacity 2s ease-in;
+    }
+
+    #choices {
+      display: none;
+      opacity: 0;
+      transition: opacity 1s;
+    }
+    #choices button {
+      background-color: #ff99cc;
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      cursor: pointer;
+      font-size: 1.1em;
+      margin: 5px;
+    }
+
+    .heart {
+      position: absolute;
+      font-size: 24px;
+      animation: floatUp 4s linear infinite;
+      pointer-events: none;
+    }
+    @keyframes floatUp {
+      0% { transform: translateY(0) scale(1); opacity: 1; }
+      100% { transform: translateY(-500px) scale(1.5); opacity: 0; }
+    }
+
+    #musicButton {
+      background-color:#ff66aa; 
+      border:none; 
+      color:white; 
+      padding:10px 20px; 
+      border-radius:20px; 
+      cursor:pointer; 
+      font-size:1.1em;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nút bật nhạc -->
+  <button id="musicButton">Bột bấm vào đây trước nha 🤗</button>
+
+  <!-- Nội dung ẩn: ảnh + tin nhắn -->
+  <div id="content">
+    <div class="photo" style="background-image: url('https://i.postimg.cc/3rpzNKbH/Messenger-creation-516803140654051.jpg');"></div>
+    <div class="message" id="message"></div>
+  </div>
+
+  <!-- Hai nút lựa chọn -->
+  <div id="choices">
+    <button onclick="alert('Cảm ơn Bột 💖, em sẽ thấy cách anh yêu em thật sự như thế nào khi không còn rào cản')"> Đồng ý 💖</button>
+    <button onclick="alert('Anh hiểu… Nhưng Babi giận đáng yêu thật đấy, chuẩn bị tinh thần hết giận nhaaaa 💖')">Để suy nghĩ 💖</button>
+  </div>
+
+  <!-- Nhạc nền -->
+  <audio id="bgMusic" loop preload="auto">
+    <source src="https://files.catbox.moe/diyvx1.mp3" type="audio/mpeg">
+  </audio>
+
+  <script>
+    const musicButton = document.getElementById('musicButton');
+    const bgMusic = document.getElementById('bgMusic');
+    const content = document.getElementById('content');
+    const choices = document.getElementById('choices');
+    const messageEl = document.getElementById('message');
+    const photoEl = document.querySelector('.photo');
+
+    const messageText = "Anh muốn nói với em rằng... Anh vẫn luôn nhớ em 💖<br>Anh muốn được hỏi em rất nhiều điều nhưng chưa thể nói.<br> Anh vẫn luôn nhớ về những ngày mình bên nhau.<br> Cho anh được ở cạnh em thêm lần nữa nhé? 💫";
+
+    // Hàm tim bay
+    function createHeart() {
+      const heart = document.createElement('div');
+      heart.className = 'heart';
+      heart.style.left = Math.random() * window.innerWidth + 'px';
+      heart.style.fontSize = (20 + Math.random() * 30) + 'px';
+      heart.style.color = `hsl(${Math.random() * 360}, 70%, 60%)`;
+      heart.innerHTML = '❤️';
+      document.body.appendChild(heart);
+      setTimeout(() => { heart.remove(); }, 4000);
+    }
+
+    function startHearts() {
+      setInterval(createHeart, 500);
+    }
+
+    // Hàm gõ chữ hỗ trợ <br>
+    function typeWriter(text, element, speed = 80) {
+      let i = 0;
+      function typing() {
+        if (i < text.length) {
+          if (text.substr(i, 4) === '<br>') {
+            element.innerHTML += '<br>';
+            i += 4;
+          } else {
+            element.innerHTML += text.charAt(i);
+            i++;
+          }
+          setTimeout(typing, speed);
+        }
+      }
+      typing();
+    }
+
+    // Khi bấm nút
+    musicButton.addEventListener('click', () => {
+      bgMusic.play().catch(() => alert("Trình duyệt chặn nhạc, hãy tương tác lại"));
+      musicButton.style.display = 'none';
+      content.style.display = 'flex';
+      startHearts();
+
+      // Fade-in content
+      setTimeout(() => { content.style.opacity = 1; }, 50);
+
+      // Fade-in ảnh trước
+      setTimeout(() => { photoEl.style.opacity = 1; }, 100);
+
+      // Fade-in tin nhắn và bắt đầu typewriter sau 1.5s
+      setTimeout(() => {
+        messageEl.style.opacity = 1;
+        typeWriter(messageText, messageEl);
+      }, 1500);
+
+      // Hiện 2 nút lựa chọn sau 18s
+      setTimeout(() => {
+        choices.style.display = 'block';
+        setTimeout(() => { choices.style.opacity = 1; }, 50);
+      }, 18000);
+    });
+  </script>
+
+</body>
+</html>
